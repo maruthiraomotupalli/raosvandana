@@ -74,7 +74,7 @@ h2{font-size:19px;font-weight:700;color:var(--ink);letter-spacing:-.01em;margin-
 .chip:hover{border-color:rgba(236,51,55,.45)}
 .chip[aria-pressed="true"]{background:var(--red);color:#fff;border-color:var(--red)}
 label.lbl{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:7px}
-textarea{width:100%;min-height:150px;resize:vertical;font:inherit;font-size:15px;color:var(--ink);
+textarea{width:100%;min-height:96px;resize:vertical;font:inherit;font-size:15px;color:var(--ink);
   padding:14px;border:1px solid var(--line);border-radius:var(--r);background:#F9FAFB;line-height:1.55}
 textarea:focus{outline:2px solid var(--red);outline-offset:1px;background:#fff}
 .row{display:flex;gap:10px;margin-top:13px;flex-wrap:wrap}
@@ -158,7 +158,7 @@ textarea:focus{outline:2px solid var(--red);outline-offset:1px;background:#fff}
 
   <section class="card about">
     <h2>About Rao's Vandana</h2>
-    <p>Rao's Vandana is FMCG Products Andhra Pradesh, offering high-quality grains, flours and papads for everyday cooking.</p>
+    <p>Rao's Vandana is FMCG Products in Andhra Pradesh, offering high-quality grains, flours and papads for everyday cooking.</p>
     <p>The range covers Ravva and Semolina, Flours and Millets, Vermicelli and Pasta, and Papads &mdash; from Ragi flour to Bansi and Sujji ravva.</p>
     <div class="cats">
       <span class="cat">Ravva &amp; Semolina</span>
@@ -297,52 +297,63 @@ const DIR_URL = "https://www.google.com/maps/dir/?api=1&destination=16.5338668,8
                 "&destination_place_id=" + PLACE_ID;
 document.getElementById("mapLink").href = DIR_URL;
 
+/* Short phrasings on purpose: a scan should produce a one or two line
+   review, which is what most customers actually write. */
 const PARTS = {
+  quality: ["Quality is consistently good.", "Products are fresh and clean.",
+            "Good quality every time.", "Well milled flours, no grit."],
+  papad:   ["The masala papads are tasty and crisp.", "Papads taste homemade.",
+            "Good papad varieties.", "The carom papad is excellent."],
+  ravva:   ["Clean, well milled ravva.", "Ravva quality is very good.",
+            "Good ravva for upma and sweets.", "The sujji ravva is excellent."],
+  millets: ["Good range of millets and ragi flour.", "Fresh ragi flour.",
+            "Proper millet flours here.", "Nice millet selection."],
+  price:   ["Prices are reasonable.", "Good value for the quality.",
+            "Fair rates.", "Honest pricing."],
+  packing: ["Well packed, arrived in good condition.", "Neat packing, delivered on time.",
+            "Quick delivery.", "Packed properly."],
+  service: ["Quick replies on WhatsApp.", "Prompt and friendly service.",
+            "Easy to deal with.", "Service was prompt."]
+};
+const CLOSERS = ["Recommended.", "Will order again.", "Highly recommended.",
+                 "Worth trying.", "Happy with the purchase.", "Thank you."];
+const MAX_LEN = 66;    // two lines even in a 360px-wide box
+
+/* Two reviews in every ten are fuller, three or four lines, so a shop's
+   reviews do not all read the same length. These are the longer phrasings. */
+const LONG_PARTS = {
   quality: ["The quality of the grains and flours is consistently good.",
             "Products are fresh and clean, good quality every time.",
-            "Quality has been consistent across everything we have bought.",
-            "The flours are well milled and there is no grit in them."],
-  papad:   ["The masala papads are tasty and crisp.",
+            "Quality has been consistent across everything we have bought."],
+  papad:   ["The masala papads are tasty and crisp, they fry up well.",
             "We liked the papad varieties, the masala one especially.",
-            "The papads fry up well and taste homemade.",
-            "The carom papad has become a favourite at home."],
+            "The papads taste homemade and the carom one is a favourite."],
   ravva:   ["The bansi and sujji ravva are clean and well milled.",
             "Ravva quality is good, it works well for upma and sweets.",
-            "The ravva cooks evenly and does not turn sticky.",
-            "Good ravva, exactly what we needed for breakfast items."],
+            "The ravva cooks evenly and does not turn sticky."],
   millets: ["Good range of millets and ragi flour in one place.",
-            "Happy to find proper millet flours here.",
             "The ragi flour is fresh and smells right.",
-            "Nice to get millets without hunting around town."],
+            "Happy to find proper millet flours without hunting around town."],
   price:   ["Prices are reasonable for the quality you get.",
-            "Good value compared to other stores nearby.",
             "Rates are fair, especially for larger quantities.",
-            "Pricing is honest and straightforward."],
+            "Good value compared to other stores nearby."],
   packing: ["The order was well packed and reached in good condition.",
-            "Packing was neat and delivery was on time.",
-            "Everything arrived sealed properly with nothing spilled.",
-            "Delivery was quick and the packing held up well."],
+            "Packing was neat and the delivery was on time.",
+            "Everything arrived sealed properly with nothing spilled."],
   service: ["They respond quickly on WhatsApp and are easy to deal with.",
             "Service was prompt and the dealing is straightforward.",
-            "Queries get answered quickly and politely.",
-            "Ordering was simple and they kept us updated."]
+            "Queries get answered quickly and politely."]
 };
-const OPENERS = ["Ordered from Rao's Vandana in Vijayawada.",
-                 "Have been buying our kitchen products from Rao's Vandana.",
-                 "Bought flours and papads from Rao's Vandana recently.",
-                 "Tried Rao's Vandana for our monthly provisions.",
-                 "Been a regular customer of Rao's Vandana for a while now.",
-                 "Picked up a few items from Rao's Vandana last week.",
-                 "First time ordering from Rao's Vandana.",
-                 "We get our ravva and flours from Rao's Vandana."];
-const CLOSERS = ["Would recommend them for everyday kitchen products.",
-                 "Will be ordering again.",
-                 "Happy to recommend them to others in Vijayawada.",
-                 "Worth trying if you want good quality products.",
-                 "Will definitely keep buying from here.",
-                 "Good option for regular household supplies.",
-                 "Thank you for the good service.",
-                 "Recommended."];
+const LONG_OPENERS = ["Ordered from Rao's Vandana in Vijayawada.",
+                      "Have been buying our kitchen products from Rao's Vandana.",
+                      "Bought flours and papads from Rao's Vandana recently.",
+                      "We get our ravva and flours from Rao's Vandana.",
+                      "Been a regular customer of Rao's Vandana for a while now."];
+const LONG_CLOSERS = ["Would recommend them for everyday kitchen products.",
+                      "Will definitely keep buying from here.",
+                      "Happy to recommend them to others in Vijayawada.",
+                      "Good option for regular household supplies."];
+const LONG_MAX_LINES = 4, LONG_MIN_LINES = 3;
 
 const ta = document.getElementById("t");
 const chips = [...document.querySelectorAll(".chip")];
@@ -353,14 +364,112 @@ const pick = a => a[Math.floor(Math.random() * a.length)];
    The last draft is remembered on this device and never repeated twice
    in a row. */
 const LAST_KEY = "rv_last_draft";
+const CYCLE_KEY = "rv_cycle";
+
+/* Exactly two of every ten drafts are long, in an order that is shuffled
+   each time round, so it is a real 2-in-10 rather than a 20% chance that
+   drifts. The position is kept on the device and advances once per visit. */
+function nextIsLong(){
+  let cyc, i;
+  try {
+    const raw = JSON.parse(localStorage.getItem(CYCLE_KEY) || "null");
+    if (raw && Array.isArray(raw.c) && raw.c.length === 10 && raw.i < 10) {
+      cyc = raw.c; i = raw.i;
+    }
+  } catch(e){}
+  if (!cyc) {
+    cyc = [1,1,0,0,0,0,0,0,0,0];
+    for (let j = cyc.length - 1; j > 0; j--) {
+      const k = Math.floor(Math.random() * (j + 1));
+      [cyc[j], cyc[k]] = [cyc[k], cyc[j]];
+    }
+    i = 0;
+  }
+  const long = cyc[i] === 1;
+  const ni = i + 1;
+  try {
+    localStorage.setItem(CYCLE_KEY, ni >= 10 ? "null" : JSON.stringify({ c: cyc, i: ni }));
+  } catch(e){}
+  return long;
+}
+let LONG_DRAFT = false;
 function lastDraft(){ try { return localStorage.getItem(LAST_KEY) || ""; } catch(e){ return ""; } }
 function remember(t){ try { localStorage.setItem(LAST_KEY, t); } catch(e){} }
 
+/* Measures how many lines a string really takes in the box at this screen
+   width, so the cap holds on a narrow phone too, not just by character count. */
+let mirror = null;
+function linesOf(text){
+  try {
+    const cs = getComputedStyle(ta);
+    if (!mirror) {
+      mirror = document.createElement("div");
+      mirror.style.cssText = "position:absolute;visibility:hidden;left:-9999px;top:0;" +
+                             "white-space:pre-wrap;word-wrap:break-word";
+      document.body.appendChild(mirror);
+    }
+    mirror.style.width = (ta.clientWidth - parseFloat(cs.paddingLeft) -
+                          parseFloat(cs.paddingRight)) + "px";
+    mirror.style.font = cs.font;
+    mirror.style.lineHeight = cs.lineHeight;
+    mirror.textContent = text;
+    const lh = parseFloat(cs.lineHeight);
+    return lh ? Math.round(mirror.offsetHeight / lh) : 1;
+  } catch(e) { return 1; }
+}
+
+/* Once the customer picks points themselves, every one they picked is
+   included - their choice wins over the length cap. */
+let userPicked = false;
+
+function buildShort(bits){
+  let t = "";
+  for (const b of bits) {                      // add points while they fit
+    const next = t ? t + " " + b : b;
+    if (next.length <= MAX_LEN) t = next; else break;
+  }
+  if (!t && bits.length) t = bits[0];          // always at least one point
+  const close = pick(CLOSERS);
+  if (t.length + close.length + 1 <= MAX_LEN) t = t + " " + close;
+  if (linesOf(t) > 2) {                        // final check against the real box
+    const noClose = bits.join(" ");
+    if (linesOf(noClose) <= 2) return noClose;
+    t = bits[0];
+    const c2 = pick(CLOSERS);
+    if (linesOf(t + " " + c2) <= 2) t += " " + c2;
+  }
+  return t;
+}
+
+function buildLong(keys){
+  let t = pick(LONG_OPENERS);
+  for (const k of keys) {
+    const next = t + " " + pick(LONG_PARTS[k]);
+    if (linesOf(next) <= LONG_MAX_LINES) t = next; else break;
+  }
+  const close = pick(LONG_CLOSERS);
+  if (linesOf(t + " " + close) <= LONG_MAX_LINES) t += " " + close;
+  // if it came out short of three lines, add another point that still fits
+  if (linesOf(t) < LONG_MIN_LINES) {
+    for (const k of Object.keys(LONG_PARTS)) {
+      const next = t + " " + pick(LONG_PARTS[k]);
+      if (linesOf(next) <= LONG_MAX_LINES) { t = next; }
+      if (linesOf(t) >= LONG_MIN_LINES) break;
+    }
+  }
+  return t;
+}
+
 function buildDraft(){
   const on = chips.filter(c => c.getAttribute("aria-pressed") === "true").map(c => c.dataset.k);
-  const body = on.map(k => pick(PARTS[k])).join(" ");
-  return [pick(OPENERS), body, pick(CLOSERS)].filter(Boolean).join(" ");
+  if (userPicked) {
+    const bank = LONG_DRAFT ? LONG_PARTS : PARTS;
+    const body = on.map(k => pick(bank[k])).join(" ");
+    return body + " " + pick(LONG_DRAFT ? LONG_CLOSERS : CLOSERS);
+  }
+  return LONG_DRAFT ? buildLong(on) : buildShort(on.map(k => pick(PARTS[k])));
 }
+
 function compose(){
   let t = buildDraft();
   for (let i = 0; i < 20 && t === lastDraft(); i++) t = buildDraft();
@@ -368,7 +477,8 @@ function compose(){
   remember(t);
 }
 function shuffleChips(){
-  const n = 2 + Math.floor(Math.random() * 2);          // two or three points
+  const n = LONG_DRAFT ? 3 + Math.floor(Math.random() * 2)   // three or four points
+                       : 1 + Math.floor(Math.random() * 2);  // one or two points
   const order = chips.slice();
   for (let i = order.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -379,9 +489,11 @@ function shuffleChips(){
 }
 chips.forEach(c => c.addEventListener("click", () => {
   c.setAttribute("aria-pressed", c.getAttribute("aria-pressed") === "true" ? "false" : "true");
+  userPicked = true;
   compose();
 }));
 document.getElementById("again").addEventListener("click", compose);
+LONG_DRAFT = nextIsLong();   // once per visit, so 2 of every 10 scans are long
 shuffleChips();
 compose();
 
